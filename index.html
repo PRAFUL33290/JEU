@@ -671,14 +671,283 @@ body {
   animation: flashGreen 0.4s ease 3;
 }
 
-/* Responsive */
+/* === TOUCH CONTROLS (mobile uniquement) === */
+.touch-controls {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0 24px;
+  width: 100%;
+}
+.touch-row {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  align-items: center;
+}
+.touch-btn {
+  width: 74px;
+  height: 74px;
+  background: var(--bg-dark);
+  border: 3px solid rgba(255,255,255,0.5);
+  border-radius: 14px;
+  color: var(--white);
+  font-size: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 0 rgba(0,0,0,0.6);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.07s, box-shadow 0.07s;
+}
+.touch-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,0.6); }
+.touch-btn.rotate-btn {
+  background: linear-gradient(135deg, #1a5ab8, var(--blue));
+  border-color: var(--blue);
+  font-size: 34px;
+  width: 84px;
+}
+.touch-btn.drop-btn {
+  background: linear-gradient(135deg, #aa1f1f, var(--red));
+  border-color: var(--red);
+  width: 120px;
+  font-size: 24px;
+  letter-spacing: 2px;
+}
+.touch-btn.reset-btn {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.25);
+  font-size: 11px;
+  width: 56px;
+  height: 56px;
+  font-family: 'Press Start 2P', monospace;
+  letter-spacing: 1px;
+}
+
+/* cover image écran accueil */
+.cover-image {
+  max-width: 220px;
+  width: 100%;
+  margin-bottom: 10px;
+  border-radius: 12px;
+}
+
+/* === RESPONSIVE & TOUCH (Tablettes et petits ordinateurs) === */
 @media (max-width: 1024px) {
-  .game-layout {
-    grid-template-columns: 1fr;
+  :root { --cell: 32px; }
+  .touch-controls { display: flex; }
+  .controls-help { display: none; }
+}
+
+/* === RESPONSIVE MOBILE PORTRAIT & PETITES TABLETTES (≤ 850px) === */
+@media (max-width: 850px) {
+  body {
+    padding: 10px 5px;
+    align-items: flex-start;
+    min-height: 100dvh;
+    overflow-x: hidden;
   }
-  :root { --cell: 30px; }
-  .title { font-size: 28px; }
-  .players-form { grid-template-columns: 1fr; }
+
+  :root {
+    /* Calcul intelligent qui prend en compte les boutons plus gros et la safe-area des iPhone */
+    --cell: min(11vw, calc((100dvh - 350px - env(safe-area-inset-bottom)) / 16)); 
+  }
+
+  .game-title {
+    font-size: 20px;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .game-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .panel {
+    width: 100%;
+    padding: 8px 10px;
+  }
+
+  /* Panneau Haut (Stats) */
+  .panel:first-of-type {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+  }
+  .panel:first-of-type .player-badge {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 0;
+    padding-right: 8px;
+    border-right: 2px dashed rgba(255,255,255,0.2);
+    flex: 0 0 auto;
+    max-width: 110px;
+  }
+  .panel:first-of-type .avatar {
+    width: 32px; height: 32px; font-size: 16px; margin: 0; border-width: 2px;
+  }
+  .panel:first-of-type .player-name {
+    font-size: 8px;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+  }
+  .panel:first-of-type .stat-block {
+    flex: 1;
+    text-align: center;
+    margin-bottom: 0;
+    padding: 0 2px;
+    border-bottom: none;
+    border-right: 1px dashed rgba(255,255,255,0.15);
+  }
+  .panel:first-of-type .stat-block:last-child { border-right: none; }
+  .panel:first-of-type .stat-label { font-size: 6px; margin-bottom: 2px; }
+  .panel:first-of-type .stat-value { font-size: 14px; }
+
+  /* Grille : pleine largeur */
+  .game-grid-container { width: 100%; display: flex; justify-content: center; padding: 6px; }
+
+  /* Panneau Bas (Prochaine pièce) */
+  .panel:last-of-type {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    justify-content: space-between;
+  }
+  .panel:last-of-type > .stat-label { margin-top: 0 !important; font-size: 7px; }
+  .doctor-portrait { display: none; }
+  .controls-help { display: none; }
+  .next-pill-display { margin-top: 0; min-height: 36px; }
+  .level-grid {
+    flex: 1;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 2px;
+    margin-top: 0;
+  }
+  .level-dot { font-size: 5px; border-radius: 2px; }
+
+  /* Touch controls optimisés pour iPhone (boutons gros et lisibles) */
+  .touch-controls {
+    /* Ajout de la safe-area pour que la barre d'accueil iPhone ne gêne pas */
+    padding: 10px 0 calc(15px + env(safe-area-inset-bottom));
+    gap: 12px;
+    display: flex;
+    width: 100%;
+    max-width: 360px;
+  }
+  .touch-row { gap: 15px; width: 100%; }
+  
+  .touch-btn {
+    width: 75px; height: 65px; font-size: 28px; border-radius: 12px;
+  }
+  .touch-btn.rotate-btn { 
+    width: 85px; height: 75px; font-size: 34px; border-radius: 14px;
+    /* On remonte très légèrement le bouton rotatif pour un meilleur confort du pouce */
+    transform: translateY(-5px);
+  }
+  .touch-btn.rotate-btn:active { transform: translateY(0); }
+  
+  .touch-btn.drop-btn { width: 140px; height: 60px; font-size: 20px; border-radius: 12px; }
+  .touch-btn.reset-btn { width: 50px; height: 50px; font-size: 10px; border-radius: 10px; }
+
+  /* Écran accueil mobile */
+  .title { font-size: 26px; }
+  .subtitle { font-size: 10px; margin-bottom: 25px; }
+  .btn { font-size: 12px; padding: 14px 20px; }
+  .player-input { padding: 18px; }
+  .cover-image { max-width: 180px; margin-bottom: 20px; }
+  .author-credit { font-size: 9px; padding-bottom: env(safe-area-inset-bottom); }
+
+  /* Modals mobiles */
+  .modal { padding: 25px 20px; }
+  .modal h2 { font-size: 18px; }
+  .modal .big-emoji { font-size: 60px; margin: 10px 0; }
+  .health-tip { font-size: 10px; padding: 12px; }
+}
+
+/* === RESPONSIVE TRES PETIT MOBILE (≤ 380px) === */
+@media (max-width: 380px) {
+  :root {
+    --cell: min(11vw, calc((100dvh - 330px - env(safe-area-inset-bottom)) / 16));
+  }
+  .touch-btn { width: 65px; height: 55px; font-size: 24px; }
+  .touch-btn.rotate-btn { width: 75px; height: 65px; font-size: 30px; }
+  .touch-btn.drop-btn { width: 120px; height: 50px; font-size: 16px; }
+  .touch-btn.reset-btn { width: 46px; height: 46px; }
+  
+  .panel:first-of-type .player-badge { max-width: 80px; }
+  .panel:first-of-type .avatar { width: 26px; height: 26px; font-size: 12px; }
+  .title { font-size: 22px; }
+}
+
+/* === RESPONSIVE MOBILE PAYSAGE (Hauteur ≤ 600px) === */
+@media (max-height: 600px) and (orientation: landscape) {
+  body { padding: 5px; align-items: center; justify-content: center; }
+  :root { --cell: calc((100dvh - 50px) / 16); }
+  
+  .game-title { 
+    font-size: 14px; 
+    position: fixed; 
+    top: 5px; 
+    left: 10px;
+    margin: 0;
+  }
+  
+  .game-layout {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 1000px;
+  }
+  
+  .panel { width: 160px; padding: 10px; }
+  
+  .panel:first-of-type {
+    flex-direction: column;
+    align-items: center;
+  }
+  .panel:first-of-type .player-badge {
+    border-right: none; border-bottom: 2px dashed rgba(255,255,255,0.2);
+    padding: 0 0 10px 0; margin-bottom: 10px;
+    flex-direction: column; max-width: 100%; text-align: center;
+  }
+  .panel:first-of-type .stat-block {
+    border-right: none; border-bottom: 1px dashed rgba(255,255,255,0.15);
+    padding: 5px 0; width: 100%;
+  }
+  .panel:first-of-type .stat-block:last-child { border-bottom: none; }
+  
+  .panel:last-of-type { flex-direction: column; }
+  
+  .level-grid { display: none; }
+  .doctor-portrait { display: flex; width: 40px; height: 40px; font-size: 20px; }
+  
+  .touch-controls { display: none; }
+  
+  #welcome-screen { padding-top: 10px; }
+  .cover-image { display: none; }
+  .subtitle { margin-bottom: 10px; }
 }
 </style>
 </head>
@@ -754,6 +1023,19 @@ body {
         <div><kbd>↓</kbd> Accélérer</div>
         <div><kbd>Z</kbd> ou <kbd>↑</kbd> Tourner</div>
       </div>
+    </div>
+  </div>
+
+  <!-- Contrôles tactiles — mobile uniquement -->
+  <div class="touch-controls">
+    <div class="touch-row">
+      <button class="touch-btn" id="btn-left">◀</button>
+      <button class="touch-btn rotate-btn" id="btn-rotate">↻</button>
+      <button class="touch-btn" id="btn-right">▶</button>
+    </div>
+    <div class="touch-row">
+      <button class="touch-btn drop-btn" id="btn-drop">▼ TOMBER</button>
+      <button class="touch-btn reset-btn" id="btn-reset">R</button>
     </div>
   </div>
 </div>
@@ -1574,14 +1856,86 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ════════════════════════════════════════════════════════
+// CONTRÔLES MOBILES
+// ════════════════════════════════════════════════════════
+let _moveTimer = null;
+let _dropTimer = null;
+
+function startMove(dir) {
+  if (GameState.isPaused || GameState.isGameOver) return;
+  tryMovePill(dir, 0);
+  stopMove();
+  _moveTimer = setInterval(() => tryMovePill(dir, 0), 120);
+}
+function stopMove() { clearInterval(_moveTimer); _moveTimer = null; }
+
+function softDrop() {
+  if (GameState.isPaused || GameState.isGameOver || !GameState.currentPill) return;
+  tryMovePill(0, 1);
+  GameState.lastFall = performance.now();
+}
+function startDrop() {
+  if (GameState.isPaused || GameState.isGameOver) return;
+  softDrop();
+  stopDrop();
+  _dropTimer = setInterval(softDrop, 60);
+}
+function stopDrop() { clearInterval(_dropTimer); _dropTimer = null; }
+
+function setupTouchControls() {
+  function hold(id, onStart, onStop) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('touchstart',  (e) => { e.preventDefault(); onStart(); }, { passive: false });
+    el.addEventListener('touchend',    (e) => { e.preventDefault(); onStop();  }, { passive: false });
+    el.addEventListener('touchcancel', () => onStop());
+    el.addEventListener('mousedown',   () => onStart());
+    el.addEventListener('mouseup',     () => onStop());
+    el.addEventListener('mouseleave',  () => onStop());
+  }
+  function tap(id, fn) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('touchstart', (e) => { e.preventDefault(); fn(); }, { passive: false });
+    el.addEventListener('click', fn);
+  }
+
+  hold('btn-left',  () => startMove(-1), stopMove);
+  hold('btn-right', () => startMove(1),  stopMove);
+  hold('btn-drop',  startDrop, stopDrop);
+  tap('btn-rotate', tryRotatePill);
+  tap('btn-reset',  resetLevel);
+
+  // Swipe sur la grille comme alternative
+  const container = document.querySelector('.game-grid-container');
+  let sx, sy, st;
+  container.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    sx = t.clientX; sy = t.clientY; st = Date.now();
+  }, { passive: true });
+  container.addEventListener('touchend', (e) => {
+    if (GameState.isPaused || GameState.isGameOver || !GameState.currentPill) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - sx, dy = t.clientY - sy;
+    const dist = Math.hypot(dx, dy);
+    if (dist < 12 && Date.now() - st < 250) {
+      tryRotatePill(); // tap = rotate
+    } else if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 20) {
+      tryMovePill(dx > 0 ? 1 : -1, 0); // swipe horizontal = déplacer
+    } else if (dy > 30) {
+      softDrop(); // swipe bas = tomber
+    }
+  }, { passive: true });
+}
+
+// ════════════════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════════════════
 window.addEventListener('load', () => {
-  // Pré-remplir le groupe
   const saved = localStorage.getItem('drmario_lastTeam');
   if (saved) document.getElementById('team-name').value = saved;
-
   MusicManager.init();
+  setupTouchControls();
 });
 </script>
 </body>
