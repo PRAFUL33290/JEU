@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr. Mario Junior ★</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1a0a2e;
+  --bg-dark: #0d0519;
+  --red: #FF3B3B;
+  --blue: #3B8BFF;
+  --yellow: #FFD700;
+  --green: #4CAF50;
+  --pink: #FF6BB5;
+  --white: #FFFFFF;
+  --cell: 36px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Press Start 2P', monospace;
+}
+
+body {
+  background: var(--bg);
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 59, 59, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(59, 139, 255, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+  color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+/* === ÉCRAN D'ACCUEIL === */
+#welcome-screen {
+  text-align: center;
+  max-width: 800px;
+  width: 100%;
+  animation: fadeIn 0.6s ease;
+}
+
+.title {
+  font-size: 42px;
+  color: var(--yellow);
+  text-shadow: 4px 4px 0 var(--red), 8px 8px 0 var(--bg-dark);
+  margin-bottom: 10px;
+  animation: titleBounce 2s ease-in-out infinite;
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--white);
+  margin-bottom: 40px;
+  letter-spacing: 1px;
+}
+
+.team-form {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.player-input {
+  background: var(--bg-dark);
+  border: 4px solid;
+  border-radius: 8px;
+  padding: 25px;
+  box-shadow: 0 8px 0 rgba(0,0,0,0.4);
+  width: 100%;
+  max-width: 420px;
+}
+
+.player-input.p1 { border-color: var(--yellow); box-shadow: 0 8px 0 #aa8800; }
+
+.player-label {
+  font-size: 13px;
+  margin-bottom: 15px;
+  display: block;
+  letter-spacing: 1px;
+  color: var(--yellow);
+}
+
+.player-input input {
+  width: 100%;
+  padding: 15px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  background: var(--bg);
+  border: 3px solid var(--white);
+  color: var(--white);
+  border-radius: 4px;
+  text-align: center;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.player-input input:focus {
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+}
+
+.optional-tag {
+  font-size: 9px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 8px;
+  display: block;
+}
+
+.btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 16px;
+  padding: 18px 35px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.15s;
+  margin: 8px;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  background: var(--green);
+  color: var(--white);
+  box-shadow: 0 6px 0 #2e7031;
+}
+
+.btn-primary:hover {
+  transform: translateY(2px);
+  box-shadow: 0 4px 0 #2e7031;
+}
+
+.btn-primary:active {
+  transform: translateY(6px);
+  box-shadow: 0 0 0 #2e7031;
+}
+
+.btn-secondary {
+  background: var(--bg-dark);
+  color: var(--white);
+  border: 3px solid var(--white);
+  box-shadow: 0 6px 0 rgba(0,0,0,0.4);
+  font-size: 11px;
+  padding: 14px 22px;
+}
+
+.btn-secondary:hover {
+  transform: translateY(2px);
+  box-shadow: 0 4px 0 rgba(0,0,0,0.4);
+}
+
+.btn-danger {
+  background: var(--red);
+  color: var(--white);
+  box-shadow: 0 6px 0 #aa1f1f;
+  font-size: 11px;
+  padding: 14px 22px;
+}
+
+.scores-link {
+  margin-top: 20px;
+}
+
+.game-title {
+  text-align: center;
+  font-size: 30px;
+  color: var(--yellow);
+  text-shadow: 3px 3px 0 var(--red), 6px 6px 0 rgba(0,0,0,0.6);
+  letter-spacing: 4px;
+  margin-bottom: 18px;
+  animation: titleBounce 2s ease-in-out infinite;
+}
+
+/* === ÉCRAN DE JEU === */
+#game-screen {
+  display: none;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.game-layout {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.panel {
+  background: var(--bg-dark);
+  border: 4px solid var(--white);
+  border-radius: 8px;
+  padding: 18px;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.4);
+}
+
+.player-badge {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  border: 4px solid var(--white);
+  animation: avatarBounce 1s ease-in-out infinite;
+}
+
+.avatar.p1 { background: var(--red); }
+.avatar.p2 { background: var(--blue); }
+.avatar.team { background: linear-gradient(135deg, var(--green), #2e7031); }
+
+.player-name {
+  font-size: 14px;
+  color: var(--yellow);
+  letter-spacing: 1px;
+  word-break: break-all;
+}
+
+.stat-block {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 2px dashed rgba(255,255,255,0.2);
+}
+
+.stat-block:last-child { border-bottom: none; }
+
+.stat-label {
+  font-size: 9px;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  font-size: 18px;
+  color: var(--yellow);
+  letter-spacing: 1px;
+}
+
+/* Grille de jeu */
+.game-grid-container {
+  background: var(--bg-dark);
+  border: 4px solid var(--white);
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.4);
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(8, var(--cell));
+  grid-template-rows: repeat(16, var(--cell));
+  gap: 1px;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 4px;
+}
+
+.cell {
+  width: var(--cell);
+  height: var(--cell);
+  background: rgba(0,0,0,0.4);
+  position: relative;
+}
+
+.piece {
+  position: absolute;
+  inset: 2px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.3);
+}
+
+.piece.red { background: var(--red); }
+.piece.blue { background: var(--blue); }
+.piece.yellow { background: var(--yellow); }
+
+/* Pilule : connecteur visuel entre les deux moitiés */
+.piece.pill-half-h-left { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.piece.pill-half-h-right { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.piece.pill-half-v-top { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.piece.pill-half-v-bottom { border-top-left-radius: 0; border-top-right-radius: 0; }
+
+/* Virus */
+.piece.virus {
+  animation: virusShake 0.4s ease-in-out infinite;
+}
+
+.piece.virus::before {
+  content: '👀';
+  font-size: 20px;
+}
+
+.piece.virus.super::after {
+  content: '★';
+  position: absolute;
+  top: -8px;
+  right: -4px;
+  color: var(--yellow);
+  font-size: 14px;
+  text-shadow: 1px 1px 0 #000;
+  animation: starSpin 2s linear infinite;
+}
+
+/* Animation d'élimination */
+.piece.exploding {
+  animation: explode 0.4s ease-out forwards;
+}
+
+/* Portrait Dr. Mario */
+.doctor-portrait {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--pink), var(--red));
+  border: 3px solid var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.doctor-portrait.idle { animation: doctorIdle 2s ease-in-out infinite; }
+.doctor-portrait.happy { animation: doctorHappy 0.5s ease infinite; }
+.doctor-portrait.jump { animation: doctorJump 0.4s ease; }
+.doctor-portrait.sad { animation: doctorSad 1s ease; filter: grayscale(0.7); }
+.doctor-portrait.victory { animation: doctorVictory 0.6s ease infinite; }
+
+.next-pill-display {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin-top: 10px;
+  min-height: 44px;
+  align-items: center;
+}
+
+.next-cell {
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  box-shadow: inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.3);
+  flex-shrink: 0;
+}
+.next-cell.pill-half-h-left { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.next-cell.pill-half-h-right { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+
+/* Grille 40 niveaux */
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 3px;
+  margin-top: 6px;
+}
+.level-dot {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5px;
+  letter-spacing: 0;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.3);
+  user-select: none;
+}
+.level-dot.done {
+  background: var(--yellow);
+  color: #000;
+  font-size: 8px;
+}
+.level-dot.current {
+  background: var(--green);
+  color: #fff;
+  font-size: 6px;
+  font-weight: bold;
+  animation: levelPulse 0.9s ease-in-out infinite;
+}
+@keyframes levelPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(76,175,80,0.7); transform: scale(1); }
+  50%      { box-shadow: 0 0 0 4px rgba(76,175,80,0); transform: scale(1.15); }
+}
+
+/* Crédit auteur */
+.author-credit {
+  position: fixed;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 2px;
+  pointer-events: none;
+  z-index: 10;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.9);
+}
+
+.controls-help {
+  font-size: 8px;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.7);
+  margin-top: 12px;
+}
+
+.controls-help kbd {
+  background: var(--bg);
+  padding: 2px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.3);
+  margin-right: 4px;
+  display: inline-block;
+}
+
+/* Multiplicateur de combo */
+.combo-display {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 80px;
+  color: var(--yellow);
+  text-shadow: 4px 4px 0 var(--red), 8px 8px 0 var(--bg-dark);
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.combo-display.show {
+  animation: comboShow 1s ease-out;
+}
+
+/* === ÉCRAN DE TRANSITION === */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.active {
+  display: flex;
+  animation: fadeIn 0.4s ease;
+}
+
+.modal {
+  background: var(--bg-dark);
+  border: 4px solid var(--yellow);
+  border-radius: 12px;
+  padding: 35px;
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 10px 0 rgba(0,0,0,0.5);
+  animation: modalPop 0.5s ease;
+}
+
+.modal h2 {
+  font-size: 22px;
+  color: var(--yellow);
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.modal p {
+  font-size: 12px;
+  line-height: 1.8;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+.modal .big-emoji {
+  font-size: 80px;
+  margin: 15px 0;
+  display: block;
+}
+
+.health-tip {
+  background: rgba(76, 175, 80, 0.15);
+  border: 3px solid var(--green);
+  border-radius: 8px;
+  padding: 18px;
+  margin: 20px 0;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--white);
+  letter-spacing: 1px;
+}
+
+/* Podium */
+.podium {
+  margin: 20px 0;
+}
+
+.podium-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg);
+  border: 3px solid;
+  border-radius: 8px;
+  padding: 15px 20px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.podium-row.gold { border-color: var(--yellow); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
+.podium-row.silver { border-color: #C0C0C0; }
+
+.podium-medal { font-size: 24px; }
+.podium-name { color: var(--white); flex: 1; text-align: left; padding-left: 15px; word-break: break-all; }
+.podium-score { color: var(--yellow); }
+
+/* Tableau scores */
+.scores-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 10px;
+}
+
+.scores-table th, .scores-table td {
+  padding: 10px;
+  text-align: center;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+.scores-table th {
+  background: var(--bg);
+  color: var(--yellow);
+  letter-spacing: 1px;
+}
+
+.scores-table tbody tr:hover {
+  background: rgba(255, 215, 0, 0.1);
+}
+
+/* Confettis */
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  z-index: 49;
+  pointer-events: none;
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes titleBounce {
+  0%, 100% { transform: scale(1) rotate(-1deg); }
+  50% { transform: scale(1.04) rotate(1deg); }
+}
+
+@keyframes avatarBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes virusShake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-1px, 1px) rotate(-3deg); }
+  75% { transform: translate(1px, -1px) rotate(3deg); }
+}
+
+@keyframes starSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes explode {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 20px currentColor; }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+@keyframes doctorIdle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes doctorHappy {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.05) rotate(-5deg); }
+  75% { transform: scale(1.05) rotate(5deg); }
+}
+
+@keyframes doctorJump {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-15px) scale(1.1); }
+}
+
+@keyframes doctorSad {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+@keyframes doctorVictory {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.15) rotate(360deg); }
+}
+
+@keyframes comboShow {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+  80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.4); }
+}
+
+@keyframes modalPop {
+  0% { transform: scale(0.7); opacity: 0; }
+  60% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes flashGreen {
+  0%, 100% { background: rgba(255,255,255,0.1); }
+  50% { background: rgba(76, 175, 80, 0.4); }
+}
+
+.grid-flash {
+  animation: flashGreen 0.4s ease 3;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .game-layout {
+    grid-template-columns: 1fr;
+  }
+  :root { --cell: 30px; }
+  .title { font-size: 28px; }
+  .players-form { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<audio id="game-music" src="fever.mp3" preload="auto"></audio>
+<audio id="gameover-music" src="gameover.mp3" preload="auto"></audio>
+<audio id="win-sound" src="win.mp3" preload="auto"></audio>
+<div class="author-credit">Jeu réalisé par Julien Animateur</div>
+
+<!-- ÉCRAN D'ACCUEIL -->
+<div id="welcome-screen">
+  <h1 class="title">DOCTEUR JULIEN</h1>
+  <p class="subtitle">Qui joue aujourd'hui ?</p>
+
+  <div class="team-form">
+    <div class="player-input p1">
+      <label class="player-label">👥 VOS PRÉNOMS</label>
+      <input type="text" id="team-name" maxlength="30" placeholder="Ex : Emma, Théo, Léa" />
+      <span class="optional-tag">Écrivez vos prénoms séparés par des virgules</span>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="startGame()">C'EST PARTI ! ▶</button>
+
+  <div class="scores-link">
+    <button class="btn btn-secondary" onclick="showHighScores()">🏅 MEILLEURS SCORES</button>
+  </div>
+</div>
+
+<!-- ÉCRAN DE JEU -->
+<div id="game-screen">
+  <div class="game-title">⭐ DOCTEUR JULIEN ⭐</div>
+  <div class="game-layout">
+    <!-- Panneau gauche -->
+    <div class="panel">
+      <div class="player-badge">
+        <div class="avatar team" id="active-avatar">👥</div>
+        <div class="player-name" id="active-name">—</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-label">SCORE</div>
+        <div class="stat-value" id="score-display">0</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-label">NIVEAU</div>
+        <div class="stat-value" id="level-display">1</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-label">VIRUS</div>
+        <div class="stat-value" id="virus-display">0</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-label">TEMPS</div>
+        <div class="stat-value" id="timer-display">0s</div>
+      </div>
+    </div>
+
+    <!-- Grille -->
+    <div class="game-grid-container">
+      <div class="game-grid" id="game-grid"></div>
+    </div>
+
+    <!-- Panneau droit -->
+    <div class="panel">
+      <div class="doctor-portrait idle" id="doctor">👨‍⚕️</div>
+      <div class="stat-label" style="text-align:center;">PROCHAINE</div>
+      <div class="next-pill-display" id="next-pill" style="display:flex; justify-content:center; align-items:center; min-height:44px; gap:0;"></div>
+      <div class="stat-label" style="text-align:center; margin-top:12px;">NIVEAUX 1 → 40</div>
+      <div class="level-grid" id="level-grid"></div>
+      <div class="controls-help">
+        <div><kbd>←</kbd><kbd>→</kbd> Déplacer</div>
+        <div><kbd>↓</kbd> Accélérer</div>
+        <div><kbd>Z</kbd> ou <kbd>↑</kbd> Tourner</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Affichage combo -->
+<div class="combo-display" id="combo-display"></div>
+
+<!-- MODAL TRANSITION NIVEAU -->
+<div class="modal-overlay" id="level-transition">
+  <div class="modal">
+    <h2 id="level-transition-title">NIVEAU TERMINÉ !</h2>
+    <span class="big-emoji">😊</span>
+    <p id="level-transition-message">Tu as soigné le Gromi !</p>
+    <div class="health-tip" id="health-tip">🍎 Conseil santé...</div>
+    <button class="btn btn-primary" onclick="continueToNextLevel()">CONTINUER ▶</button>
+  </div>
+</div>
+
+<!-- MODAL FIN DE PARTIE -->
+<div class="modal-overlay" id="player-end">
+  <div class="modal">
+    <h2 id="player-end-title">PARTIE TERMINÉE !</h2>
+    <span class="big-emoji" id="player-end-emoji">🎉</span>
+    <p id="player-end-message"></p>
+    <p style="color: var(--yellow); font-size: 18px; margin: 20px 0;" id="player-end-score">0 points</p>
+    <button class="btn btn-primary" onclick="rejouer()">REJOUER ▶</button>
+    <button class="btn btn-secondary" onclick="goToWelcome()">CHANGER DE GROUPE</button>
+  </div>
+</div>
+
+<!-- MODAL HIGH SCORES -->
+<div class="modal-overlay" id="high-scores">
+  <div class="modal">
+    <h2>🏅 MEILLEURS SCORES</h2>
+    <table class="scores-table" id="scores-table">
+      <thead>
+        <tr><th>Rang</th><th>Prénom</th><th>Score</th><th>Niv.</th><th>Date</th></tr>
+      </thead>
+      <tbody id="scores-tbody"></tbody>
+    </table>
+    <button class="btn btn-secondary" onclick="closeHighScores()">FERMER</button>
+    <button class="btn btn-danger" onclick="clearHighScores()">EFFACER</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// MUSIC MANAGER — une seule instance garantie
+// ════════════════════════════════════════════════════════
+const MusicManager = {
+  _on: false,
+  _goOn: false,
+  el()   { return document.getElementById('game-music'); },
+  goEl() { return document.getElementById('gameover-music'); },
+  init() {
+    this.el().addEventListener('ended', () => {
+      if (this._on) { this.el().currentTime = 0; this.el().play().catch(() => {}); }
+    });
+    this.goEl().addEventListener('ended', () => { this._goOn = false; });
+  },
+  play() {
+    if (this._on) return;
+    this.stopGameOver();
+    this._on = true;
+    this.el().currentTime = 0;
+    this.el().play().catch(() => { this._on = false; });
+  },
+  stop() {
+    this._on = false;
+    this.el().pause();
+    this.el().currentTime = 0;
+  },
+  playGameOver() {
+    this.stop();
+    if (this._goOn) return;
+    this._goOn = true;
+    this.goEl().currentTime = 0;
+    this.goEl().play().catch(() => { this._goOn = false; });
+  },
+  stopGameOver() {
+    this._goOn = false;
+    this.goEl().pause();
+    this.goEl().currentTime = 0;
+  }
+};
+
+function playWinSound() {
+  const win = document.getElementById('win-sound');
+  win.currentTime = 0;
+  win.play().catch(() => {});
+}
+
+// ════════════════════════════════════════════════════════
+// CONFIGURATION
+// ════════════════════════════════════════════════════════
+const COLS = 8;
+const ROWS = 16;
+const COLORS = ['red', 'blue', 'yellow'];
+const HEALTH_TIPS = [
+  "🍎 Manger des fruits te donne de l'énergie !",
+  "💧 Boire de l'eau aide ton corps à bien fonctionner !",
+  "😴 Dormir 9h te rend plus fort et plus intelligent !",
+  "🏃 Bouger chaque jour rend ton cœur heureux !",
+  "🥦 Les légumes protègent contre les vraies maladies !",
+  "🦷 Brosse-toi les dents matin et soir !",
+  "🌳 Jouer dehors, c'est super bon pour la santé !",
+  "🤲 Lave-toi les mains avant de manger !"
+];
+
+// ════════════════════════════════════════════════════════
+// GAME STATE
+// ════════════════════════════════════════════════════════
+const GameState = {
+  grid: [],
+  currentPill: null,    // { row, col, orientation, colorA, colorB }
+  nextPill: null,
+  score: 0,
+  level: 1,
+  virusCount: 0,
+  startTime: 0,
+  fallSpeed: 800,
+  lastFall: 0,
+  isPaused: true,
+  isGameOver: false,
+  isAnimating: false,
+
+  reset() {
+    this.grid = Array.from({length: ROWS}, () => Array(COLS).fill(null));
+    this.score = 0;
+    this.level = 1;
+    this.fallSpeed = 800;
+    this.isGameOver = false;
+    this.isPaused = true;
+    this.isAnimating = false;
+  }
+};
+
+const Team = {
+  name: '',
+  setup(name) { this.name = name; }
+};
+
+// ════════════════════════════════════════════════════════
+// PILL CLASS — gestion des 4 orientations
+// ════════════════════════════════════════════════════════
+// Orientations:
+// 0 = Horizontale normale  : [A][B]
+// 1 = Verticale normale    : A en haut, B en bas
+// 2 = Horizontale miroir   : [B][A]
+// 3 = Verticale miroir     : B en haut, A en bas
+function createPill(colorA, colorB) {
+  return {
+    row: 0,
+    col: Math.floor(COLS / 2) - 1,
+    orientation: 0,
+    colorA: colorA,
+    colorB: colorB
+  };
+}
+
+function randomPill() {
+  const a = COLORS[Math.floor(Math.random() * 3)];
+  const b = COLORS[Math.floor(Math.random() * 3)];
+  return createPill(a, b);
+}
+
+// Retourne les 2 cellules occupées par la pilule selon orientation
+function getPillCells(pill) {
+  const { row, col, orientation, colorA, colorB } = pill;
+  switch(orientation) {
+    case 0: return [{ r: row, c: col, color: colorA, part: 'h-left' },
+                    { r: row, c: col+1, color: colorB, part: 'h-right' }];
+    case 1: return [{ r: row, c: col, color: colorA, part: 'v-top' },
+                    { r: row+1, c: col, color: colorB, part: 'v-bottom' }];
+    case 2: return [{ r: row, c: col, color: colorB, part: 'h-left' },
+                    { r: row, c: col+1, color: colorA, part: 'h-right' }];
+    case 3: return [{ r: row, c: col, color: colorB, part: 'v-top' },
+                    { r: row+1, c: col, color: colorA, part: 'v-bottom' }];
+  }
+}
+
+function isPillValid(pill) {
+  const cells = getPillCells(pill);
+  for (const cell of cells) {
+    if (cell.r < 0 || cell.r >= ROWS) return false;
+    if (cell.c < 0 || cell.c >= COLS) return false;
+    if (GameState.grid[cell.r][cell.c] !== null) return false;
+  }
+  return true;
+}
+
+// ════════════════════════════════════════════════════════
+// GENERATION VIRUS
+// ════════════════════════════════════════════════════════
+const MAX_LEVEL = 40;
+
+function levelDifficulty(level) {
+  const t = (level - 1) / (MAX_LEVEL - 1); // 0 → 1
+  return {
+    virusCount: Math.round(4 + t * 44),                          // 4 → 48
+    fallSpeed:  Math.round(800 - t * 650),                       // 800ms → 150ms
+    superChance: level >= 8 ? Math.min((level - 7) / 32 * 0.6, 0.6) : 0  // 0% → 60%
+  };
+}
+
+function generateVirus(level) {
+  const { virusCount, superChance } = levelDifficulty(level);
+  GameState.virusCount = 0;
+
+  let placed = 0;
+  let attempts = 0;
+  while (placed < virusCount && attempts < 1000) {
+    attempts++;
+    const r = Math.floor(Math.random() * (ROWS - 6)) + 6;
+    const c = Math.floor(Math.random() * COLS);
+    if (GameState.grid[r][c] === null) {
+      GameState.grid[r][c] = {
+        type: 'virus',
+        color: COLORS[Math.floor(Math.random() * 3)],
+        super: Math.random() < superChance
+      };
+      placed++;
+      GameState.virusCount++;
+    }
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// COLLISION & DETECTION
+// ════════════════════════════════════════════════════════
+function lockPill() {
+  const cells = getPillCells(GameState.currentPill);
+  for (const cell of cells) {
+    GameState.grid[cell.r][cell.c] = {
+      type: 'pill',
+      color: cell.color,
+      part: cell.part
+    };
+  }
+  GameState.currentPill = null;
+}
+
+// Trouve les groupes de 4+ alignés (5+ pour super virus inclus)
+function findMatches() {
+  const matches = new Set();
+
+  // Horizontal
+  for (let r = 0; r < ROWS; r++) {
+    let run = [];
+    for (let c = 0; c <= COLS; c++) {
+      const cell = c < COLS ? GameState.grid[r][c] : null;
+      if (cell && run.length > 0 && cell.color === GameState.grid[r][run[0]].color) {
+        run.push(c);
+      } else {
+        // Vérifier si run forme un match
+        if (run.length >= 4) {
+          // Si super virus dans le groupe, exiger 5
+          let needed = 4;
+          for (const col of run) {
+            const g = GameState.grid[r][col];
+            if (g && g.type === 'virus' && g.super) { needed = 5; break; }
+          }
+          if (run.length >= needed) {
+            run.forEach(col => matches.add(`${r},${col}`));
+          }
+        }
+        run = cell ? [c] : [];
+      }
+    }
+  }
+
+  // Vertical
+  for (let c = 0; c < COLS; c++) {
+    let run = [];
+    for (let r = 0; r <= ROWS; r++) {
+      const cell = r < ROWS ? GameState.grid[r][c] : null;
+      if (cell && run.length > 0 && cell.color === GameState.grid[run[0]][c].color) {
+        run.push(r);
+      } else {
+        if (run.length >= 4) {
+          let needed = 4;
+          for (const row of run) {
+            const g = GameState.grid[row][c];
+            if (g && g.type === 'virus' && g.super) { needed = 5; break; }
+          }
+          if (run.length >= needed) {
+            run.forEach(row => matches.add(`${row},${c}`));
+          }
+        }
+        run = cell ? [r] : [];
+      }
+    }
+  }
+
+  return matches;
+}
+
+// Compte les groupes distincts dans un set de matches (pour combo)
+function countDistinctGroups(matches) {
+  const visited = new Set();
+  let groups = 0;
+  for (const key of matches) {
+    if (visited.has(key)) continue;
+    groups++;
+    const [r, c] = key.split(',').map(Number);
+    const stack = [[r, c]];
+    while (stack.length) {
+      const [cr, cc] = stack.pop();
+      const k = `${cr},${cc}`;
+      if (visited.has(k) || !matches.has(k)) continue;
+      visited.add(k);
+      stack.push([cr+1, cc], [cr-1, cc], [cr, cc+1], [cr, cc-1]);
+    }
+  }
+  return groups;
+}
+
+// Applique la gravité aux demi-pilules orphelines (les virus restent)
+function applyGravity() {
+  let moved = false;
+  for (let c = 0; c < COLS; c++) {
+    for (let r = ROWS - 2; r >= 0; r--) {
+      const cell = GameState.grid[r][c];
+      if (cell && cell.type === 'pill') {
+        // Vérifier si c'est une moitié de pilule liée — si oui, traiter ensemble
+        // Pour simplifier : chaque demi-pilule tombe individuellement après élimination
+        if (GameState.grid[r+1][c] === null) {
+          GameState.grid[r+1][c] = cell;
+          GameState.grid[r][c] = null;
+          // Rendre les anciennes pilules indépendantes (perdent leur "part" connecteur)
+          GameState.grid[r+1][c] = { ...cell, part: null };
+          moved = true;
+        }
+      }
+    }
+  }
+  return moved;
+}
+
+// ════════════════════════════════════════════════════════
+// GAME LOOP
+// ════════════════════════════════════════════════════════
+async function processMatches() {
+  GameState.isAnimating = true;
+  let chainGroups = 0;
+  let totalEliminated = 0;
+
+  while (true) {
+    const matches = findMatches();
+    if (matches.size === 0) break;
+
+    const groups = countDistinctGroups(matches);
+    chainGroups = Math.max(chainGroups, groups);
+
+    // Animation explosion + comptage virus
+    let virusEliminatedThisRound = 0;
+    for (const key of matches) {
+      const [r, c] = key.split(',').map(Number);
+      const cell = GameState.grid[r][c];
+      if (cell && cell.type === 'virus') virusEliminatedThisRound++;
+      // Marquer pour animation
+      const cellElement = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"] .piece`);
+      if (cellElement) cellElement.classList.add('exploding');
+    }
+
+    await sleep(400);
+
+    // Suppression réelle
+    for (const key of matches) {
+      const [r, c] = key.split(',').map(Number);
+      GameState.grid[r][c] = null;
+    }
+    GameState.virusCount -= virusEliminatedThisRound;
+    totalEliminated += virusEliminatedThisRound;
+    if (virusEliminatedThisRound > 0) playWinSound();
+
+    render();
+
+    // Score
+    const multiplier = groups >= 3 ? 4 : groups >= 2 ? 2 : 1;
+    GameState.score += virusEliminatedThisRound * 100 * multiplier;
+    updateStats();
+
+    if (multiplier > 1) {
+      showCombo(`×${multiplier} !`);
+      setDoctorMood('jump');
+    }
+
+    // Gravité
+    let moved = true;
+    while (moved) {
+      moved = applyGravity();
+      if (moved) {
+        render();
+        await sleep(150);
+      }
+    }
+  }
+
+  GameState.isAnimating = false;
+
+  // Vérifier victoire niveau
+  if (GameState.virusCount === 0) {
+    onLevelComplete();
+  } else {
+    spawnPill();
+  }
+}
+
+function spawnPill() {
+  GameState.currentPill = GameState.nextPill || randomPill();
+  GameState.nextPill = randomPill();
+
+  if (!isPillValid(GameState.currentPill)) {
+    onGameOver();
+    return;
+  }
+
+  render();
+  renderNextPill();
+}
+
+function gameTick(timestamp) {
+  if (GameState.isPaused || GameState.isGameOver) return;
+
+  if (!GameState.isAnimating && GameState.currentPill) {
+    if (timestamp - GameState.lastFall > GameState.fallSpeed) {
+      tryMovePill(0, 1);
+      GameState.lastFall = timestamp;
+    }
+  }
+
+  // Update timer
+  const elapsed = Math.floor((Date.now() - GameState.startTime) / 1000);
+  document.getElementById('timer-display').textContent = elapsed + 's';
+
+  requestAnimationFrame(gameTick);
+}
+
+function tryMovePill(dCol, dRow) {
+  if (!GameState.currentPill || GameState.isAnimating) return false;
+  const test = { ...GameState.currentPill, row: GameState.currentPill.row + dRow, col: GameState.currentPill.col + dCol };
+  if (isPillValid(test)) {
+    GameState.currentPill = test;
+    render();
+    return true;
+  } else if (dRow > 0) {
+    // Atterrissage
+    lockPill();
+    setDoctorMood('happy');
+    setTimeout(() => setDoctorMood('idle'), 300);
+    processMatches();
+    return false;
+  }
+  return false;
+}
+
+function tryRotatePill() {
+  if (!GameState.currentPill || GameState.isAnimating) return;
+  const newOri = (GameState.currentPill.orientation + 1) % 4;
+  const test = { ...GameState.currentPill, orientation: newOri };
+  if (isPillValid(test)) {
+    GameState.currentPill = test;
+    render();
+  } else {
+    // Wall kick : essayer en décalant
+    const kickL = { ...test, col: test.col - 1 };
+    if (isPillValid(kickL)) {
+      GameState.currentPill = kickL;
+      render();
+    }
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// RENDERING
+// ════════════════════════════════════════════════════════
+function buildGrid() {
+  const grid = document.getElementById('game-grid');
+  grid.innerHTML = '';
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.r = r;
+      cell.dataset.c = c;
+      grid.appendChild(cell);
+    }
+  }
+}
+
+function render() {
+  // Reset cells
+  document.querySelectorAll('.cell').forEach(cell => {
+    cell.innerHTML = '';
+  });
+
+  // Render grid
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const data = GameState.grid[r][c];
+      if (!data) continue;
+      const cellEl = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+      const piece = document.createElement('div');
+      piece.className = `piece ${data.color}`;
+      if (data.type === 'virus') {
+        piece.classList.add('virus');
+        if (data.super) piece.classList.add('super');
+      } else if (data.type === 'pill' && data.part) {
+        piece.classList.add(`pill-half-${data.part}`);
+      }
+      cellEl.appendChild(piece);
+    }
+  }
+
+  // Render current pill
+  if (GameState.currentPill) {
+    const cells = getPillCells(GameState.currentPill);
+    for (const cell of cells) {
+      if (cell.r < 0 || cell.r >= ROWS) continue;
+      const cellEl = document.querySelector(`.cell[data-r="${cell.r}"][data-c="${cell.c}"]`);
+      if (!cellEl) continue;
+      const piece = document.createElement('div');
+      piece.className = `piece ${cell.color} pill-half-${cell.part}`;
+      cellEl.appendChild(piece);
+    }
+  }
+}
+
+function renderNextPill() {
+  const display = document.getElementById('next-pill');
+  display.innerHTML = '';
+  if (!GameState.nextPill) return;
+  const colorMap = { red: '#FF3B3B', blue: '#3B8BFF', yellow: '#FFD700' };
+  const cA = colorMap[GameState.nextPill.colorA] || '#888';
+  const cB = colorMap[GameState.nextPill.colorB] || '#888';
+  const base = 'display:block; width:36px; height:36px; flex-shrink:0; box-shadow:inset -3px -3px 0 rgba(0,0,0,0.3),inset 3px 3px 0 rgba(255,255,255,0.3);';
+  const a = document.createElement('div');
+  a.style.cssText = base + `background:${cA}; border-radius:18px 0 0 18px;`;
+  const b = document.createElement('div');
+  b.style.cssText = base + `background:${cB}; border-radius:0 18px 18px 0;`;
+  display.appendChild(a);
+  display.appendChild(b);
+}
+
+function updateStats() {
+  document.getElementById('score-display').textContent = GameState.score;
+  document.getElementById('level-display').textContent = GameState.level;
+  document.getElementById('virus-display').textContent = GameState.virusCount;
+  updateLevelCups();
+}
+
+function updateLevelCups() {
+  const el = document.getElementById('level-grid');
+  if (!el) return;
+  el.innerHTML = '';
+  for (let i = 1; i <= MAX_LEVEL; i++) {
+    const dot = document.createElement('div');
+    if (i < GameState.level) {
+      dot.className = 'level-dot done';
+      dot.textContent = '✓';
+      dot.title = `Niveau ${i} terminé !`;
+    } else if (i === GameState.level) {
+      dot.className = 'level-dot current';
+      dot.textContent = i;
+      dot.title = `Niveau ${i} en cours`;
+    } else {
+      dot.className = 'level-dot';
+      dot.textContent = i;
+      dot.title = `Niveau ${i}`;
+    }
+    el.appendChild(dot);
+  }
+}
+
+function setDoctorMood(mood) {
+  const doctor = document.getElementById('doctor');
+  doctor.className = `doctor-portrait ${mood}`;
+  if (mood === 'sad') doctor.textContent = '😢';
+  else if (mood === 'victory') doctor.textContent = '🎉';
+  else if (mood === 'jump') doctor.textContent = '🤩';
+  else if (mood === 'happy') doctor.textContent = '😊';
+  else doctor.textContent = '👨‍⚕️';
+}
+
+function showCombo(text) {
+  const el = document.getElementById('combo-display');
+  el.textContent = text;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+}
+
+function showConfetti(count = 50) {
+  const colors = ['#FF3B3B', '#3B8BFF', '#FFD700', '#4CAF50', '#FF6BB5'];
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + '%';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animation = `confettiFall ${2 + Math.random() * 2}s linear`;
+    c.style.animationDelay = Math.random() * 0.5 + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// FLOW
+// ════════════════════════════════════════════════════════
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function startGame() {
+  const name = document.getElementById('team-name').value.trim();
+  if (!name) {
+    alert('Écrivez vos prénoms pour commencer !');
+    return;
+  }
+  localStorage.setItem('drmario_lastTeam', name);
+  Team.setup(name);
+  document.getElementById('welcome-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'block';
+  startPlayerSession();
+}
+
+function startPlayerSession() {
+  GameState.reset();
+  generateVirus(GameState.level);
+  GameState.startTime = Date.now();
+  GameState.fallSpeed = levelDifficulty(GameState.level).fallSpeed;
+  document.getElementById('active-name').textContent = Team.name;
+  updateStats();
+  buildGrid();
+  spawnPill();
+  GameState.isPaused = false;
+  GameState.lastFall = performance.now();
+  setDoctorMood('idle');
+  MusicManager.play();
+  requestAnimationFrame(gameTick);
+}
+
+function onLevelComplete() {
+  GameState.isPaused = true;
+  setDoctorMood('victory');
+
+  // Bonus vitesse
+  const elapsed = Math.floor((Date.now() - GameState.startTime) / 1000);
+  if (elapsed < 60) {
+    GameState.score += 1000;
+    showCombo('+1000 !');
+  }
+
+  // Flash grille
+  document.getElementById('game-grid').classList.add('grid-flash');
+  setTimeout(() => document.getElementById('game-grid').classList.remove('grid-flash'), 1200);
+
+  showConfetti(40);
+
+  setTimeout(() => {
+    const tip = HEALTH_TIPS[Math.floor(Math.random() * HEALTH_TIPS.length)];
+    document.getElementById('level-transition-title').textContent = `NIVEAU ${GameState.level} TERMINÉ !`;
+    document.getElementById('level-transition-message').textContent = `Bravo ${Team.name} ! Vous avez soigné un Gromi !`;
+    document.getElementById('health-tip').textContent = tip;
+    document.getElementById('level-transition').classList.add('active');
+  }, 800);
+}
+
+function continueToNextLevel() {
+  document.getElementById('level-transition').classList.remove('active');
+  GameState.level++;
+  if (GameState.level > MAX_LEVEL) { onGameComplete(); return; }
+  GameState.fallSpeed = levelDifficulty(GameState.level).fallSpeed;
+  GameState.grid = Array.from({length: ROWS}, () => Array(COLS).fill(null));
+  generateVirus(GameState.level);
+  GameState.startTime = Date.now();
+  GameState.isPaused = false;
+  GameState.lastFall = performance.now();
+  updateStats();
+  buildGrid();
+  spawnPill();
+  setDoctorMood('idle');
+  requestAnimationFrame(gameTick);
+}
+
+function onGameComplete() {
+  GameState.isPaused = true;
+  GameState.isGameOver = true;
+  MusicManager.stop();
+  setDoctorMood('victory');
+  showConfetti(80);
+  saveScore(Team.name, GameState.score, MAX_LEVEL);
+  setTimeout(() => {
+    document.getElementById('player-end-title').textContent = '🏆 INCROYABLE ! 🏆';
+    document.getElementById('player-end-emoji').textContent = '🌟';
+    document.getElementById('player-end-message').textContent =
+      `${Team.name} ont terminé les 40 NIVEAUX ! Vous êtes des champions !`;
+    document.getElementById('player-end-score').textContent = `${GameState.score} points`;
+    document.getElementById('player-end').classList.add('active');
+  }, 600);
+}
+
+function onGameOver() {
+  GameState.isGameOver = true;
+  GameState.isPaused = true;
+  setDoctorMood('sad');
+  MusicManager.playGameOver();
+  saveScore(Team.name, GameState.score, GameState.level);
+  setTimeout(() => {
+    document.getElementById('player-end-title').textContent = 'PARTIE TERMINÉE !';
+    document.getElementById('player-end-emoji').textContent = '😅';
+    document.getElementById('player-end-message').textContent =
+      `Bien joué ${Team.name} ! Vous avez atteint le niveau ${GameState.level}.`;
+    document.getElementById('player-end-score').textContent = `${GameState.score} points`;
+    document.getElementById('player-end').classList.add('active');
+  }, 800);
+}
+
+function rejouer() {
+  document.getElementById('player-end').classList.remove('active');
+  MusicManager.stopGameOver();
+  startPlayerSession();
+}
+
+function resetLevel() {
+  GameState.isAnimating = false;
+  GameState.currentPill = null;
+  GameState.nextPill = null;
+  GameState.grid = Array.from({length: ROWS}, () => Array(COLS).fill(null));
+  generateVirus(GameState.level);
+  GameState.startTime = Date.now();
+  GameState.lastFall = performance.now();
+  buildGrid();
+  spawnPill();
+  setDoctorMood('idle');
+  requestAnimationFrame(gameTick);
+}
+
+function goToWelcome() {
+  document.getElementById('player-end').classList.remove('active');
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('welcome-screen').style.display = 'block';
+  MusicManager.stop();
+}
+
+// ════════════════════════════════════════════════════════
+// HIGH SCORES
+// ════════════════════════════════════════════════════════
+function saveScore(name, score, level) {
+  const scores = JSON.parse(localStorage.getItem('drmario_highscores') || '[]');
+  scores.push({
+    name, score, level,
+    date: new Date().toLocaleDateString('fr-FR')
+  });
+  scores.sort((a, b) => b.score - a.score);
+  localStorage.setItem('drmario_highscores', JSON.stringify(scores.slice(0, 10)));
+}
+
+function showHighScores() {
+  const scores = JSON.parse(localStorage.getItem('drmario_highscores') || '[]');
+  const tbody = document.getElementById('scores-tbody');
+  tbody.innerHTML = '';
+  if (scores.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="padding:30px;">Aucun score enregistré</td></tr>';
+  } else {
+    scores.forEach((s, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${i+1}</td><td>${s.name}</td><td>${s.score}</td><td>${s.level}</td><td>${s.date}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+  document.getElementById('high-scores').classList.add('active');
+}
+
+function closeHighScores() {
+  document.getElementById('high-scores').classList.remove('active');
+}
+
+function clearHighScores() {
+  if (confirm('Effacer tous les scores ?')) {
+    localStorage.removeItem('drmario_highscores');
+    showHighScores();
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// INPUT
+// ════════════════════════════════════════════════════════
+document.addEventListener('keydown', (e) => {
+  if ((e.key === 'r' || e.key === 'R') && !GameState.isPaused && !GameState.isGameOver) {
+    e.preventDefault();
+    resetLevel();
+    return;
+  }
+
+  if (GameState.isPaused || GameState.isGameOver || !GameState.currentPill) return;
+
+  switch(e.key) {
+    case 'ArrowLeft':
+      e.preventDefault();
+      tryMovePill(-1, 0);
+      break;
+    case 'ArrowRight':
+      e.preventDefault();
+      tryMovePill(1, 0);
+      break;
+    case 'ArrowDown':
+      e.preventDefault();
+      tryMovePill(0, 1);
+      GameState.lastFall = performance.now();
+      break;
+    case 'ArrowUp':
+    case 'z':
+    case 'Z':
+      e.preventDefault();
+      tryRotatePill();
+      break;
+  }
+});
+
+// ════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  // Pré-remplir le groupe
+  const saved = localStorage.getItem('drmario_lastTeam');
+  if (saved) document.getElementById('team-name').value = saved;
+
+  MusicManager.init();
+});
+</script>
+</body>
+</html>
