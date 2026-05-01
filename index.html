@@ -42,23 +42,36 @@ body {
 
 /* === ÉCRAN D'ACCUEIL === */
 #welcome-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  max-width: 800px;
   width: 100%;
+  height: 100%;
+  background-image: url('COVER.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   animation: fadeIn 0.6s ease;
+  overflow-y: auto;
+  padding: 20px;
+  z-index: 10;
+}
+
+#welcome-screen::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 5, 30, 0.62);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .cover-image {
-  width: 100%;
-  max-width: 480px;
-  border-radius: 16px;
-  border: 4px solid var(--yellow);
-  box-shadow: 0 0 30px rgba(255, 215, 0, 0.35), 0 8px 0 var(--bg-dark);
-  margin-bottom: 28px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  image-rendering: pixelated;
+  display: none;
 }
 
 .title {
@@ -731,10 +744,7 @@ body {
 
 /* cover image écran accueil */
 .cover-image {
-  max-width: 220px;
-  width: 100%;
-  margin-bottom: 10px;
-  border-radius: 12px;
+  display: none;
 }
 
 /* === RESPONSIVE & TOUCH (Tablettes et petits ordinateurs) === */
@@ -873,7 +883,6 @@ body {
   .subtitle { font-size: 10px; margin-bottom: 25px; }
   .btn { font-size: 12px; padding: 14px 20px; }
   .player-input { padding: 18px; }
-  .cover-image { max-width: 180px; margin-bottom: 20px; }
   .author-credit { font-size: 9px; padding-bottom: env(safe-area-inset-bottom); }
 
   /* Modals mobiles */
@@ -946,7 +955,6 @@ body {
   .touch-controls { display: none; }
   
   #welcome-screen { padding-top: 10px; }
-  .cover-image { display: none; }
   .subtitle { margin-bottom: 10px; }
 }
 </style>
