@@ -1129,7 +1129,7 @@ body {
       <div class="controls-help">
         <div><kbd>←</kbd><kbd>→</kbd> Déplacer &nbsp;<kbd>Q</kbd><kbd>D</kbd></div>
         <div><kbd>↓</kbd> Accélérer &nbsp;<kbd>S</kbd></div>
-        <div><kbd>Z</kbd> ou <kbd>↑</kbd> Tourner &nbsp;<kbd>A</kbd></div>
+        <div><kbd>Z</kbd> ou <kbd>↑</kbd> Tourner</div>
         <div><kbd>P</kbd> Pause / Aide</div>
         <div><kbd>R</kbd> Recommencer</div>
       </div>
@@ -1203,7 +1203,7 @@ body {
     <div class="pause-controls-grid">
       <div><kbd>←</kbd><kbd>→</kbd> ou <kbd>Q</kbd><kbd>D</kbd> &nbsp; Déplacer gauche / droite</div>
       <div><kbd>↓</kbd> ou <kbd>S</kbd> &nbsp; Accélérer la chute</div>
-      <div><kbd>Z</kbd> ou <kbd>↑</kbd> ou <kbd>A</kbd> &nbsp; Tourner la pilule</div>
+      <div><kbd>Z</kbd> ou <kbd>↑</kbd> &nbsp; Tourner la pilule</div>
       <div><kbd>P</kbd> Pause / Reprendre &nbsp; <kbd>R</kbd> Recommencer le niveau</div>
     </div>
     <div class="pause-rules">
@@ -1726,7 +1726,7 @@ function render() {
     for (const cell of ghostCells) {
       if (cell.r < 0 || cell.r >= ROWS) continue;
       const cellEl = document.querySelector(`.cell[data-r="${cell.r}"][data-c="${cell.c}"]`);
-      if (!cellEl || cellEl.hasChildNodes()) continue;
+      if (!cellEl) continue;
       const piece = document.createElement('div');
       piece.className = `piece ${cell.color} pill-half-${cell.part} ghost`;
       cellEl.appendChild(piece);
@@ -2043,8 +2043,6 @@ document.addEventListener('keydown', (e) => {
     case 'ArrowUp':
     case 'z':
     case 'Z':
-    case 'a':
-    case 'A':
       e.preventDefault();
       tryRotatePill();
       break;
@@ -2105,8 +2103,7 @@ function loadVolumes() {
 // ════════════════════════════════════════════════════════
 function exportScores() {
   const raw = localStorage.getItem('drmario_highscores') || '[]';
-  let code;
-  try { code = btoa(unescape(encodeURIComponent(raw))); } catch { code = btoa(raw); }
+  const code = btoa(encodeURIComponent(raw));
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(code).then(() => {
       alert('✅ Code copié dans le presse-papier !\nCollez-le sur un autre PC pour restaurer vos scores.');
@@ -2120,8 +2117,7 @@ function importScores() {
   const code = prompt('📥 Collez votre code d\'export :');
   if (!code) return;
   try {
-    let json;
-    try { json = decodeURIComponent(escape(atob(code.trim()))); } catch { json = atob(code.trim()); }
+    const json = decodeURIComponent(atob(code.trim()));
     const scores = JSON.parse(json);
     if (!Array.isArray(scores)) throw new Error('invalid');
     const existing = JSON.parse(localStorage.getItem('drmario_highscores') || '[]');
