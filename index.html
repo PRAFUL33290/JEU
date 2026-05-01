@@ -613,9 +613,10 @@ body {
 }
 
 @keyframes explode {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 20px currentColor; }
-  100% { transform: scale(0); opacity: 0; }
+  0%   { transform: scale(1);   opacity: 1; filter: brightness(1); }
+  25%  { transform: scale(1.25); opacity: 1; filter: brightness(3); box-shadow: 0 0 18px 6px currentColor; }
+  60%  { transform: scale(1.35); opacity: 0.85; filter: brightness(2); box-shadow: 0 0 28px 10px currentColor; }
+  100% { transform: scale(0);   opacity: 0; filter: brightness(1); }
 }
 
 @keyframes doctorIdle {
@@ -898,6 +899,113 @@ body {
   .title { font-size: 22px; }
 }
 
+/* === GHOST PILL (atterrissage prévisible) === */
+.piece.ghost {
+  opacity: 0.28;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.55) !important;
+}
+
+/* === PAUSE OVERLAY === */
+#pause-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.82);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(5px);
+}
+#pause-overlay.active { display: flex; }
+
+.pause-modal {
+  background: var(--bg-dark);
+  border: 4px solid var(--blue);
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 10px 0 rgba(0,0,0,0.5);
+  animation: modalPop 0.3s ease;
+}
+.pause-modal h2 {
+  font-size: 22px;
+  color: var(--blue);
+  margin-bottom: 18px;
+  letter-spacing: 2px;
+}
+.pause-controls-grid {
+  text-align: left;
+  font-size: 9px;
+  line-height: 2.2;
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  letter-spacing: 1px;
+}
+.pause-controls-grid kbd {
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.35);
+  margin: 0 2px;
+  display: inline-block;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+}
+.pause-rules {
+  font-size: 9px;
+  line-height: 2.0;
+  color: rgba(255,255,255,0.8);
+  background: rgba(76,175,80,0.12);
+  border: 2px solid var(--green);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 14px 0;
+  text-align: left;
+  letter-spacing: 1px;
+}
+.volume-section {
+  margin: 16px 0;
+  text-align: left;
+}
+.volume-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+  font-size: 9px;
+  color: rgba(255,255,255,0.8);
+}
+.volume-row label { min-width: 90px; letter-spacing: 1px; }
+.volume-row input[type="range"] {
+  flex: 1;
+  accent-color: var(--yellow);
+  cursor: pointer;
+}
+.volume-row span { min-width: 28px; text-align: right; color: var(--yellow); font-size: 9px; }
+
+/* === EXPORT / IMPORT === */
+.export-area {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* === CELL FLASH on elimination === */
+@keyframes cellFlash {
+  0%   { background: rgba(0,0,0,0.4); }
+  40%  { background: rgba(255,255,255,0.55); }
+  100% { background: rgba(0,0,0,0.4); }
+}
+.cell.flashing { animation: cellFlash 0.4s ease forwards; }
+
 /* === RESPONSIVE MOBILE PAYSAGE (Hauteur ≤ 600px) === */
 @media (max-height: 600px) and (orientation: landscape) {
   body { padding: 5px; align-items: center; justify-content: center; }
@@ -1019,9 +1127,11 @@ body {
       <div class="stat-label" style="text-align:center; margin-top:12px;">NIVEAUX 1 → 40</div>
       <div class="level-grid" id="level-grid"></div>
       <div class="controls-help">
-        <div><kbd>←</kbd><kbd>→</kbd> Déplacer</div>
-        <div><kbd>↓</kbd> Accélérer</div>
-        <div><kbd>Z</kbd> ou <kbd>↑</kbd> Tourner</div>
+        <div><kbd>←</kbd><kbd>→</kbd> Déplacer &nbsp;<kbd>Q</kbd><kbd>D</kbd></div>
+        <div><kbd>↓</kbd> Accélérer &nbsp;<kbd>S</kbd></div>
+        <div><kbd>Z</kbd> ou <kbd>↑</kbd> Tourner &nbsp;<kbd>A</kbd></div>
+        <div><kbd>P</kbd> Pause / Aide</div>
+        <div><kbd>R</kbd> Recommencer</div>
       </div>
     </div>
   </div>
@@ -1036,6 +1146,7 @@ body {
     <div class="touch-row">
       <button class="touch-btn drop-btn" id="btn-drop">▼ TOMBER</button>
       <button class="touch-btn reset-btn" id="btn-reset">R</button>
+      <button class="touch-btn reset-btn" id="btn-pause">⏸</button>
     </div>
   </div>
 </div>
@@ -1078,6 +1189,43 @@ body {
     </table>
     <button class="btn btn-secondary" onclick="closeHighScores()">FERMER</button>
     <button class="btn btn-danger" onclick="clearHighScores()">EFFACER</button>
+    <div class="export-area">
+      <button class="btn btn-secondary" onclick="exportScores()">📤 EXPORTER</button>
+      <button class="btn btn-secondary" onclick="importScores()">📥 IMPORTER</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PAUSE -->
+<div id="pause-overlay">
+  <div class="pause-modal">
+    <h2>⏸ PAUSE</h2>
+    <div class="pause-controls-grid">
+      <div><kbd>←</kbd><kbd>→</kbd> ou <kbd>Q</kbd><kbd>D</kbd> &nbsp; Déplacer gauche / droite</div>
+      <div><kbd>↓</kbd> ou <kbd>S</kbd> &nbsp; Accélérer la chute</div>
+      <div><kbd>Z</kbd> ou <kbd>↑</kbd> ou <kbd>A</kbd> &nbsp; Tourner la pilule</div>
+      <div><kbd>P</kbd> Pause / Reprendre &nbsp; <kbd>R</kbd> Recommencer le niveau</div>
+    </div>
+    <div class="pause-rules">
+      <div>🔴🔵🟡 Alignez 4+ pièces de même couleur pour les éliminer.</div>
+      <div>🎯 Éliminez tous les virus du niveau pour gagner !</div>
+      <div>⭐ Super-virus : nécessite 5 alignés · ×2 = 2 groupes · ×4 = 3 groupes</div>
+    </div>
+    <div class="volume-section">
+      <div class="volume-row">
+        <label>🎵 Musique</label>
+        <input type="range" id="vol-music" min="0" max="1" step="0.05" value="1"
+               oninput="setMusicVolume(this.value); document.getElementById('vol-music-val').textContent=Math.round(this.value*100)+'%'">
+        <span id="vol-music-val">100%</span>
+      </div>
+      <div class="volume-row">
+        <label>🔊 Effets</label>
+        <input type="range" id="vol-sfx" min="0" max="1" step="0.05" value="1"
+               oninput="setSfxVolume(this.value); document.getElementById('vol-sfx-val').textContent=Math.round(this.value*100)+'%'">
+        <span id="vol-sfx-val">100%</span>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="togglePause()">▶ REPRENDRE</button>
   </div>
 </div>
 
@@ -1399,6 +1547,8 @@ async function processMatches() {
       // Marquer pour animation
       const cellElement = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"] .piece`);
       if (cellElement) cellElement.classList.add('exploding');
+      const cellEl = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+      if (cellEl) { cellEl.classList.remove('flashing'); void cellEl.offsetWidth; cellEl.classList.add('flashing'); }
     }
 
     await sleep(400);
@@ -1511,6 +1661,24 @@ function tryRotatePill() {
 }
 
 // ════════════════════════════════════════════════════════
+// GHOST PILL — position d'atterrissage prévisible
+// ════════════════════════════════════════════════════════
+function getGhostPill() {
+  if (!GameState.currentPill) return null;
+  let ghost = { ...GameState.currentPill };
+  while (true) {
+    const next = { ...ghost, row: ghost.row + 1 };
+    if (isPillValid(next)) {
+      ghost = next;
+    } else {
+      break;
+    }
+  }
+  if (ghost.row === GameState.currentPill.row) return null;
+  return ghost;
+}
+
+// ════════════════════════════════════════════════════════
 // RENDERING
 // ════════════════════════════════════════════════════════
 function buildGrid() {
@@ -1547,6 +1715,20 @@ function render() {
       } else if (data.type === 'pill' && data.part) {
         piece.classList.add(`pill-half-${data.part}`);
       }
+      cellEl.appendChild(piece);
+    }
+  }
+
+  // Render ghost pill (avant la pilule courante pour que celle-ci soit au dessus)
+  const ghost = getGhostPill();
+  if (ghost) {
+    const ghostCells = getPillCells(ghost);
+    for (const cell of ghostCells) {
+      if (cell.r < 0 || cell.r >= ROWS) continue;
+      const cellEl = document.querySelector(`.cell[data-r="${cell.r}"][data-c="${cell.c}"]`);
+      if (!cellEl || cellEl.hasChildNodes()) continue;
+      const piece = document.createElement('div');
+      piece.className = `piece ${cell.color} pill-half-${cell.part} ghost`;
       cellEl.appendChild(piece);
     }
   }
@@ -1830,18 +2012,30 @@ document.addEventListener('keydown', (e) => {
     return;
   }
 
+  if ((e.key === 'p' || e.key === 'P') && !GameState.isGameOver) {
+    e.preventDefault();
+    togglePause();
+    return;
+  }
+
   if (GameState.isPaused || GameState.isGameOver || !GameState.currentPill) return;
 
   switch(e.key) {
     case 'ArrowLeft':
+    case 'q':
+    case 'Q':
       e.preventDefault();
       tryMovePill(-1, 0);
       break;
     case 'ArrowRight':
+    case 'd':
+    case 'D':
       e.preventDefault();
       tryMovePill(1, 0);
       break;
     case 'ArrowDown':
+    case 's':
+    case 'S':
       e.preventDefault();
       tryMovePill(0, 1);
       GameState.lastFall = performance.now();
@@ -1849,11 +2043,96 @@ document.addEventListener('keydown', (e) => {
     case 'ArrowUp':
     case 'z':
     case 'Z':
+    case 'a':
+    case 'A':
       e.preventDefault();
       tryRotatePill();
       break;
   }
 });
+
+// ════════════════════════════════════════════════════════
+// PAUSE
+// ════════════════════════════════════════════════════════
+function togglePause() {
+  if (GameState.isGameOver) return;
+  const overlay = document.getElementById('pause-overlay');
+  GameState.isPaused = !GameState.isPaused;
+  if (GameState.isPaused) {
+    overlay.classList.add('active');
+    if (MusicManager._on) MusicManager.el().pause();
+  } else {
+    overlay.classList.remove('active');
+    GameState.lastFall = performance.now();
+    if (MusicManager._on) MusicManager.el().play().catch(() => {});
+    requestAnimationFrame(gameTick);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// VOLUME
+// ════════════════════════════════════════════════════════
+let _sfxVolume = 1;
+
+function setMusicVolume(v) {
+  const vol = parseFloat(v);
+  MusicManager.el().volume = vol;
+  MusicManager.goEl().volume = vol;
+  localStorage.setItem('drmario_vol_music', vol);
+}
+
+function setSfxVolume(v) {
+  _sfxVolume = parseFloat(v);
+  document.getElementById('win-sound').volume = _sfxVolume;
+  localStorage.setItem('drmario_vol_sfx', _sfxVolume);
+}
+
+function loadVolumes() {
+  const vm = parseFloat(localStorage.getItem('drmario_vol_music') ?? '1');
+  const vs = parseFloat(localStorage.getItem('drmario_vol_sfx') ?? '1');
+  MusicManager.el().volume = vm;
+  MusicManager.goEl().volume = vm;
+  document.getElementById('win-sound').volume = vs;
+  _sfxVolume = vs;
+  const sliderM = document.getElementById('vol-music');
+  const sliderS = document.getElementById('vol-sfx');
+  if (sliderM) { sliderM.value = vm; document.getElementById('vol-music-val').textContent = Math.round(vm * 100) + '%'; }
+  if (sliderS) { sliderS.value = vs; document.getElementById('vol-sfx-val').textContent = Math.round(vs * 100) + '%'; }
+}
+
+// ════════════════════════════════════════════════════════
+// EXPORT / IMPORT DES SCORES
+// ════════════════════════════════════════════════════════
+function exportScores() {
+  const raw = localStorage.getItem('drmario_highscores') || '[]';
+  let code;
+  try { code = btoa(unescape(encodeURIComponent(raw))); } catch { code = btoa(raw); }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(() => {
+      alert('✅ Code copié dans le presse-papier !\nCollez-le sur un autre PC pour restaurer vos scores.');
+    }).catch(() => { prompt('Copiez ce code :', code); });
+  } else {
+    prompt('Copiez ce code :', code);
+  }
+}
+
+function importScores() {
+  const code = prompt('📥 Collez votre code d\'export :');
+  if (!code) return;
+  try {
+    let json;
+    try { json = decodeURIComponent(escape(atob(code.trim()))); } catch { json = atob(code.trim()); }
+    const scores = JSON.parse(json);
+    if (!Array.isArray(scores)) throw new Error('invalid');
+    const existing = JSON.parse(localStorage.getItem('drmario_highscores') || '[]');
+    const merged = [...existing, ...scores].sort((a, b) => b.score - a.score).slice(0, 10);
+    localStorage.setItem('drmario_highscores', JSON.stringify(merged));
+    showHighScores();
+    alert('✅ Scores importés et fusionnés !');
+  } catch {
+    alert('❌ Code invalide. Vérifiez le code et réessayez.');
+  }
+}
 
 // ════════════════════════════════════════════════════════
 // CONTRÔLES MOBILES
@@ -1905,6 +2184,7 @@ function setupTouchControls() {
   hold('btn-drop',  startDrop, stopDrop);
   tap('btn-rotate', tryRotatePill);
   tap('btn-reset',  resetLevel);
+  tap('btn-pause',  togglePause);
 
   // Swipe sur la grille comme alternative
   const container = document.querySelector('.game-grid-container');
@@ -1935,6 +2215,7 @@ window.addEventListener('load', () => {
   const saved = localStorage.getItem('drmario_lastTeam');
   if (saved) document.getElementById('team-name').value = saved;
   MusicManager.init();
+  loadVolumes();
   setupTouchControls();
 });
 </script>
